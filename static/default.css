@@ -1,0 +1,29 @@
+.container {
+    max-width: 960px;
+    margin: 20px auto;
+}
+
+img {
+    max-width: 100%;
+}
+
+.row,
+.preview {
+    overflow: hidden;
+}
+
+.col {
+    float: left;
+}
+
+.col-6 {
+    width: 50%;
+}
+
+.col-3 {
+    width: 25%;
+}
+
+#predictResult {
+    font-size: 30px;
+}
