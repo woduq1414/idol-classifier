@@ -65,8 +65,8 @@ async def upload_image(request: Request):
 
     resized_img = cropped_img.resize((128, 128)).convert("L")
 
-    plt.imshow(cropped_img)
-    plt.show()
+    # plt.imshow(cropped_img)
+    # plt.show()
     # print(np.asarray(resized_img).shape)
 
     cropped_array = np.asarray(resized_img).reshape(1, 128, 128)
