@@ -37,6 +37,8 @@ async def upload_form(request: Request):
     return templates.TemplateResponse("upload.html", {"request": request})
 
 
+
+
 @app.post("/upload-image")
 async def upload_image(request: Request):
     # req_body = request.body()
@@ -52,7 +54,7 @@ async def upload_image(request: Request):
     # print(faces)
     # 얼굴 인식
 
-    faces = sorted(faces, key=lambda x: (x[2] - x[0]) * (x[3] - x[1]))
+    faces = sorted(faces, key=lambda x: (x[2] - x[0]) * (x[3] - x[1]), reverse=True)
 
     if len(faces) >= 1:
         face_location = faces[0]

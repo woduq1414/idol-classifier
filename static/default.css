@@ -1,29 +1,77 @@
-.container {
-    max-width: 960px;
-    margin: 20px auto;
+#predictResult {
+    font-size: 25px;
+}
+
+.image_area {
+    position: relative;
 }
 
 img {
+    display: block;
     max-width: 100%;
 }
 
-.row,
 .preview {
     overflow: hidden;
+    width: 160px;
+    height: 160px;
+    margin: 10px;
+    border: 1px solid red;
 }
 
-.col {
-    float: left;
+.modal-lg {
+    max-width: 1000px !important;
 }
 
-.col-6 {
-    width: 50%;
+.overlay {
+    position: absolute;
+    bottom: 10px;
+    left: 0;
+    right: 0;
+    background-color: rgba(255, 255, 255, 0.5);
+    overflow: hidden;
+    height: 0;
+    transition: .5s ease;
+    width: 100%;
 }
 
-.col-3 {
-    width: 25%;
+.image_area:hover .overlay {
+    height: 50%;
+    cursor: pointer;
 }
 
-#predictResult {
-    font-size: 30px;
+.text {
+    color: #333;
+    font-size: 20px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    -webkit-transform: translate(-50%, -50%);
+    -ms-transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%);
+    text-align: center;
+}
+
+#uploaded_image {
+    max-width: 80%;
+}
+
+#content {
+    box-shadow: 0px 0px 8px -5px rgba(0, 0, 0, 0.3);
+    padding: 1.2rem;
+}
+
+html, body, main {
+    height: 100%;
+    width: 100%;
+}
+
+main {
+    justify-content: center;
+    flex-direction: column;
+    display: flex;
+}
+
+#uploadImageServer{
+    margin-top : 0.5rem;
 }
