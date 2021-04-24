@@ -6,7 +6,7 @@ import time
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import HTMLResponse
-
+import os.path
 from PIL import Image
 from io import BytesIO
 import base64
@@ -15,6 +15,10 @@ import face_recognition as frc
 import numpy as np
 from jjy.framework.functions import *
 from jjy.framework.network import MultiLayerNet
+from os import path
+import uuid
+
+from tmp1 import process_img
 
 app = FastAPI()
 app.mount("/static", StaticFiles(directory="static"), name="static")
@@ -37,23 +41,44 @@ async def upload_form(request: Request):
     return templates.TemplateResponse("upload.html", {"request": request})
 
 
+@app.post("/report-result")
+async def upload_image(request: Request):
+    eng_idol_list = ['iu', 'irene', 'arin']
+
+    body = await request.json()
+    image_base64 = body["image"].split(",")[1]
+    predicted_idol = body["predicted"]
+    real_idol = body["real"]
+
+    if predicted_idol not in eng_idol_list or real_idol not in eng_idol_list:
+        return
+
+    img = Image.open(BytesIO(base64.b64decode(image_base64))).convert('RGB')
+    if not os.path.exists('./assets/report_image'):
+        os.makedirs('./assets/report_image')
+    save_fname = f"{real_idol}_{predicted_idol}_{uuid.uuid4()}.jpg"
+    img.save(f"./assets/report_image/{save_fname}")
+
+    return {
+        "message" : "success!"
+    }
 
 
 @app.post("/upload-image")
 async def upload_image(request: Request):
+    idol_list = ["아이유", "아이린", "아린"]
+
     # req_body = request.body()
     body = await request.json()
     image_base64 = body["image"].split(",")[1]
 
     img = Image.open(BytesIO(base64.b64decode(image_base64))).convert('RGB')
+
     img_array = np.asarray(img)
     # plt.imshow(img)
     # plt.show()
     # print(np.asarray(img).shape)
     faces = frc.face_locations(img_array)
-    # print(faces)
-    # 얼굴 인식
-
     faces = sorted(faces, key=lambda x: (x[2] - x[0]) * (x[3] - x[1]), reverse=True)
 
     if len(faces) >= 1:
@@ -80,12 +105,18 @@ async def upload_image(request: Request):
     predict_idol = ["아이유", "아이린", "아린"][predict_index]
     print(predict_idol)
 
+    process_img(img, predict_index)
+
     return {
         "result": {
             "idol": predict_idol,
-            "percentage": list(predict[0] * 100),
+            "percentage": sort_dict({idol_list[i]: predict[0][i] * 100 for i in range(len(idol_list))}, reverse=True),
         }
     }
+
+
+def sort_dict(dic, reverse=False):
+    return dict(sorted(dic.items(), key=lambda item: item[1], reverse=reverse))
 
 
 @app.get("/items/{item_id}")

@@ -115,3 +115,6 @@ dmypy.json
 
 .idea/
 
+tmp2.py
+/assets/u_image/
+/assets/report_image/

@@ -14,6 +14,9 @@
     <script src="https://unpkg.com/dropzone"></script>
     <script src="https://unpkg.com/cropperjs"></script>
     <link href="{{ url_for('static', path='/default.css') }}" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Nanum+Gothic&display=swap" rel="stylesheet">
+    <script src="//cdn.jsdelivr.net/npm/sweetalert2@10"></script>
     <style>
 
 
@@ -50,7 +53,7 @@
         </div>
         <hr>
         <div id="predictResult">
-            예측 결과 :
+            이미지를 업로드하고 결과를 확인해보세요~
         </div>
     </div>
 </main>
@@ -62,8 +65,8 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title">이미지 자르기(한 사람 얼굴만 포함되게~~)</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">×</span>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+
                 </button>
             </div>
             <div class="modal-body">
@@ -72,7 +75,7 @@
                         <div class="col-md-8">
                             <img src="" id="sample_image"/>
                         </div>
-                        <div class="col-md-4">
+                        <div class="col-md-4 " id="previewWrapper">
                             <div class="preview"></div>
                         </div>
                     </div>
@@ -80,7 +83,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" id="crop" class="btn btn-primary">확인</button>
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">취소</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">취소</button>
             </div>
         </div>
     </div>
@@ -90,7 +93,7 @@
 </html>
 
 <script>
-
+    let prevImageData = undefined;
     $(document).ready(function () {
 
         var $modal = $('#modal');
@@ -123,9 +126,10 @@
         $modal.on('shown.bs.modal', function () {
             cropper = new Cropper(image, {
                 // aspectRatio: 1,
-                viewMode: 0,
+                viewMode: 1,
                 initialAspectRatio: 1,
-                preview: '.preview'
+                preview: '.preview',
+                dragMode: "move"
             });
 
         }).on('hidden.bs.modal', function () {
@@ -146,13 +150,24 @@
                 reader.onloadend = function () {
                     var base64data = reader.result;
                     $("#uploaded_image").attr("src", base64data);
+                    $("#uploaded_image").show();
+                    $("#predictResult").text("이미지를 업로드하고 결과를 확인해보세요~");
                     $modal.modal('hide');
                 };
             });
+
+
         });
+
 
         $('#uploadImageServer').click(function () {
             let base64data = $("#uploaded_image").attr("src");
+
+            if (prevImageData === base64data) {
+                return;
+            }
+            prevImageData = base64data;
+
 
             $.ajax({
                 url: './upload-image',
@@ -160,16 +175,51 @@
                 dataType: "json",
                 data: JSON.stringify({image: base64data}),
                 success: function (data) {
+                    let eng_idol_name;
+                    switch (data["result"]["idol"]) {
+                        case "아이유":
+                            eng_idol_name = "iu";
+                            break;
+                        case "아이린":
+                            eng_idol_name = "irene";
+                            break;
+                        case "아린":
+                            eng_idol_name = "arin";
+                            break;
+                    }
+
+
                     if ("result" in data) {
                         let result = data["result"]
                         $("#predictResult").html(`
-                        예측 결과 : ${result["idol"]}
+                        <span id="resultTitle">${result["idol"]}~~</span>
                         <br>
-                        아이유 : ${result.percentage[0].toFixed(2)}%
-                        <br>
-                        아이린 : ${result.percentage[1].toFixed(2)}%
-                        <br>
-                        아린 : ${result.percentage[2].toFixed(2)}%
+                        <div id="resultIdolContainer">
+                        ${
+                            Object.keys(result["percentage"]).map(function (idol_name) {
+                                let percentage = result.percentage[idol_name].toFixed(2);
+                                return `
+
+                                    <div class="resultEachIdolWrapper">
+                                        <div class="resultLeftText">
+                                            <span class="resultIdolName">${idol_name}</span> :
+                                            <span class="resultIdolPercentage">${percentage}%</span>
+                                        </div>
+                                        <div class="progress resultPercentageProgress">
+                                          <div class="progress-bar" role="progressbar" style="width: ${percentage}%"
+                                          aria-valuenow="${percentage}" aria-valuemin="0" aria-valuemax="100"></div>
+                                        </div>
+                                    </div>
+
+
+                               `
+                            }).join("")
+                        }
+                        </div>
+                        <span id="resultReportButton" eng_idol_name=${eng_idol_name}>
+                            결과가 이상해요!
+                        </span>
+
                         `)
                     } else {
                         $("#predictResult").html(`얼굴 하나만 잘라주세요ㅠ`)
@@ -182,4 +232,42 @@
 
 
     });
+
+    $(document).on("click", "#resultReportButton", async function (e) {
+
+        let predicted = $(e.target).attr("eng_idol_name")
+
+        const {value: real_idol} = await Swal.fire({
+            title: '업로드한 사진은 누구였나요?',
+            text: "사진이 서버에 저장되며 모델 개선을 위해 사용됩니다.",
+            input: 'radio',
+            inputOptions: {
+                'iu': '아이유',
+                'irene': '아이린',
+                'arin': '아린'
+            },
+            inputValidator: (value) => {
+                if (!value) {
+                    return '하나를 골라주세요!'
+                }
+            }
+        })
+
+        $.ajax({
+            url: './report-result',
+            method: 'POST',
+            dataType: "json",
+            data: JSON.stringify({image: prevImageData, predicted: predicted, real: real_idol}),
+            success: function (data) {
+                Swal.fire(
+                    '감사합니다!',
+                    '',
+                    'success'
+                )
+            }
+        })
+
+
+    })
+
 </script>
