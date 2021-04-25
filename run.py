@@ -102,7 +102,7 @@ async def upload_image(request: Request):
 
     print(predict)
 
-    predict = predict / 2.5
+    predict = predict / 1.5
     predict = softmax(predict)
 
 
