@@ -17,6 +17,9 @@
     <link rel="preconnect" href="https://fonts.gstatic.com">
     <link href="https://fonts.googleapis.com/css2?family=Nanum+Gothic&display=swap" rel="stylesheet">
     <script src="//cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/paste.js/0.0.18/paste.min.js"
+            integrity="sha512-Rrl4RMar4C0aKtkB91vFvdkbKRJU4rbuWSxMHaQ/OUMpciWQ67EdL/jltGhhRmx7bZRKO/OhfXUgO2m5rejpxg=="
+            crossorigin="anonymous"></script>
     <style>
 
 
@@ -94,13 +97,27 @@
 
 <script>
     let prevImageData = undefined;
+
+
     $(document).ready(function () {
+
 
         var $modal = $('#modal');
 
         var image = document.getElementById('sample_image');
 
         var cropper;
+
+        $('body').pastableNonInputable();
+        $('body').on('pasteImage', function (ev, data) {
+            // console.log("dataURL: " + data.dataURL);
+            // console.log("width: " + data.width);
+            // console.log("height: " + data.height);
+            // console.log(data.blob);
+            image.src = data.dataURL;
+            $modal.modal('show');
+        })
+
 
         $("#upload_image").click(function () {
             $("#upload_image").val("")

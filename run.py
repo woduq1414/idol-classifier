@@ -60,7 +60,7 @@ async def upload_image(request: Request):
     img.save(f"./assets/report_image/{save_fname}")
 
     return {
-        "message" : "success!"
+        "message": "success!"
     }
 
 
@@ -98,8 +98,16 @@ async def upload_image(request: Request):
 
     cropped_array = np.asarray(resized_img).reshape(1, 128, 128)
 
-    predict = softmax(net.predict(np.array([cropped_array]) / 255, train_flg=False))
+    predict = net.predict(np.array([cropped_array]) / 255, train_flg=False)
+
     print(predict)
+
+    predict = predict / 2.5
+    predict = softmax(predict)
+
+
+
+
     predict_index = np.argmax(predict, axis=1)[0]
 
     predict_idol = ["아이유", "아이린", "아린"][predict_index]
