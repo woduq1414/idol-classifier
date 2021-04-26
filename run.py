@@ -100,6 +100,10 @@ async def upload_image(request: Request):
 
     predict = net.predict(np.array([cropped_array]) / 255, train_flg=False)
 
+    predict_index = np.argmax(predict, axis=1)[0]
+
+    predict_confidence = max(min(predict[0][predict_index], 8), 0) * 12.5
+
     print(predict)
 
     predict = predict / 1.5
@@ -108,7 +112,7 @@ async def upload_image(request: Request):
 
 
 
-    predict_index = np.argmax(predict, axis=1)[0]
+
 
     predict_idol = ["아이유", "아이린", "아린"][predict_index]
     print(predict_idol)
@@ -119,6 +123,7 @@ async def upload_image(request: Request):
         "result": {
             "idol": predict_idol,
             "percentage": sort_dict({idol_list[i]: predict[0][i] * 100 for i in range(len(idol_list))}, reverse=True),
+            "confidence" : predict_confidence
         }
     }
 

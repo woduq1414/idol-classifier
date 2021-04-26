@@ -211,6 +211,10 @@
                         $("#predictResult").html(`
                         <span id="resultTitle">${result["idol"]}~~</span>
                         <br>
+
+
+
+
                         <div id="resultIdolContainer">
                         ${
                             Object.keys(result["percentage"]).map(function (idol_name) {
@@ -233,6 +237,16 @@
                             }).join("")
                         }
                         </div>
+
+
+                        <div id="resultConfidenceWrapper">
+                            <span id="resultConfidenceLabel">확신도</span>
+                            <div class="progress" id="resultConfidenceProgress">
+                            <div class="progress-bar bg-info" role="progressbar" style="width: ${result["confidence"]}%"
+                              aria-valuenow="${result["confidence"]}" aria-valuemin="0" aria-valuemax="100"></div>
+                            </div>
+                        </div>
+
                         <span  id="resultReportButton" eng_idol_name=${eng_idol_name}>
                             결과가 잘못됐나요?
                         </span>

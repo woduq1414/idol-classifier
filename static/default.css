@@ -89,7 +89,6 @@ main {
 }
 
 
-
 html {
     font-size: 15px;
 }
@@ -101,7 +100,7 @@ html {
 }
 
 main {
-    display:grid;
+    display: grid;
 }
 
 #uploadImageServer {
@@ -155,8 +154,11 @@ main {
 #resultTitle {
     padding: 0.4rem 2rem;
     margin-bottom: 0.3rem;
+    /*color: white;*/
+    /*border: 5px solid #d4a4ef;*/
     border-radius: 2rem;
     background-color: #eecfff;
+    font-weight: 700;
 }
 
 #uploaded_image {
@@ -166,7 +168,7 @@ main {
 }
 
 #resultIdolContainer {
-    margin-top:0.4rem;
+    margin-top: 0.4rem;
 }
 
 #resultReportButton {
@@ -175,5 +177,34 @@ main {
     text-decoration: underline;
     font-size: 1rem;
     cursor: pointer;
+
+}
+
+#resultConfidenceLabel {
+    /*font-size: ;*/
+    flex-shrink: 0;
+}
+
+#resultConfidenceProgress {
+    margin: 0rem 1rem;
+    flex-grow: 1;
+}
+
+#resultConfidenceWrapper {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    padding: 0.7rem 2rem 0rem 2rem;
+    margin: 0rem 2rem;
+}
+
+@media all and (max-width: 600px) {
+    #resultConfidenceWrapper {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        padding: 0.7rem 0.4rem 0rem 0.4rem;
+        margin: 0rem 0.8rem;
+    }
 
 }
