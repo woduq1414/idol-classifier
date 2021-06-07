@@ -25,9 +25,14 @@ app.mount("/static", StaticFiles(directory="static"), name="static")
 
 templates = Jinja2Templates(directory="templates")
 
-model_url = "./model/idol_train_weight_2021-04-20 054113_8381_np.npz"
+model_url = "./model/idol_train_weight_2021-06-06 090301_8907_np.npz"
 net = MultiLayerNet()
-net.load_model(model_url)
+# net.load_model("./model/idol_train_weight_2021-04-20 054113_8381_np.npz")
+try:
+    net.load_model(model_url)
+except:
+    net = MultiLayerNet()
+    net.load_model("./model/idol_train_weight_2021-04-20 054113_8381_np.npz")
 
 
 @app.get("/")
@@ -42,7 +47,7 @@ async def upload_form(request: Request):
 
 
 @app.post("/report-result")
-async def upload_image(request: Request):
+async def report_result(request: Request):
     eng_idol_list = ['iu', 'irene', 'arin']
 
     body = await request.json()
@@ -75,8 +80,8 @@ async def upload_image(request: Request):
     img = Image.open(BytesIO(base64.b64decode(image_base64))).convert('RGB')
 
     img_array = np.asarray(img)
-    # plt.imshow(img)
-    # plt.show()
+    plt.imshow(img)
+    plt.show()
     # print(np.asarray(img).shape)
     faces = frc.face_locations(img_array)
     faces = sorted(faces, key=lambda x: (x[2] - x[0]) * (x[3] - x[1]), reverse=True)
@@ -97,22 +102,14 @@ async def upload_image(request: Request):
     # print(np.asarray(resized_img).shape)
 
     cropped_array = np.asarray(resized_img).reshape(1, 128, 128)
-
     predict = net.predict(np.array([cropped_array]) / 255, train_flg=False)
-
     predict_index = np.argmax(predict, axis=1)[0]
-
     predict_confidence = max(min(predict[0][predict_index], 8), 0) * 12.5
 
     print(predict)
 
-    predict = predict / 1.5
+    predict = predict / 2.5
     predict = softmax(predict)
-
-
-
-
-
 
     predict_idol = ["아이유", "아이린", "아린"][predict_index]
     print(predict_idol)
@@ -123,7 +120,7 @@ async def upload_image(request: Request):
         "result": {
             "idol": predict_idol,
             "percentage": sort_dict({idol_list[i]: predict[0][i] * 100 for i in range(len(idol_list))}, reverse=True),
-            "confidence" : predict_confidence
+            "confidence": predict_confidence
         }
     }
 
@@ -138,4 +135,4 @@ async def read_item(item_id: int, q: Optional[str] = None):
 
 
 if __name__ == "__main__":
-    uvicorn.run("run:app", host="0.0.0.0", port=7777, reload=True)
+    uvicorn.run("run:app", host="0.0.0.0", port=7777, reload=True, )

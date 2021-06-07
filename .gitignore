@@ -118,3 +118,5 @@ dmypy.json
 tmp2.py
 /assets/u_image/
 /assets/report_image/
+
+idol_train_weight_2021-06-06 090301_8907_np.npz
