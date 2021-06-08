@@ -190,7 +190,7 @@
 
     setCookie("websocket_cookie", clientID, undefined, "/")
 
-    var ws = new WebSocket(`ws://idol.multiflex.tk/ws/${clientID}`);
+    var ws = new WebSocket(`wss://idol.multiflex.tk/ws/${clientID}`);
 
     function processMessage(event) {
         let data = JSON.parse(event.data)
