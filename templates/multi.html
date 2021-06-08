@@ -155,7 +155,7 @@
                     </label>
                     <!--                    <br>-->
                     <br>
-                    <div class="btn btn-primary" id="uploadImageServer">결과 확인~~~~~~~</div>
+                    <div class="btn btn-primary" id="uploadImageServer">업로드~~~~~~~</div>
 
                 </div>
 
@@ -190,7 +190,8 @@
 
     setCookie("websocket_cookie", clientID, undefined, "/")
 
-    var ws = new WebSocket(`wss://idol.multiflex.tk/ws/${clientID}`);
+
+    var ws = new WebSocket(`${window.location.host === "127.0.0.1:7777" ? "ws" : "wss"}://${window.location.host}/ws/${clientID}`);
 
     function processMessage(event) {
         let data = JSON.parse(event.data)
@@ -288,7 +289,7 @@
 
 
             }
-            ("#predictResult").text("이미지를 업로드하고 결과를 확인해보세요~");
+            $("#predictResult").text("이미지를 업로드하고 결과를 확인해보세요~");
         });
 
         $('#uploadImageServer').click(function () {
@@ -324,7 +325,7 @@
                 data: form_data,
                 type: 'POST',
                 success: function (res, status) {
-
+                    //$("#uploadImageServer").hide();
                 },
                 fail: function (res) {
                     alert('Failed');
