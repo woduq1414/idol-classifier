@@ -134,6 +134,12 @@ async def report_result(request: Request):
 
 
 async def process_multi(files, client_id=None):
+
+    for i in range(15):
+        await asyncio.sleep(0.2)
+        await manager.send({"t", str(datetime.now())}, client_id)
+
+
     hash = id_generator(8)
 
     print(files)
