@@ -166,13 +166,6 @@ async def process_multi(files, client_id=None):
         # 태스크(퓨처) 객체를 리스트로 만듦
         # crop_result = await asyncio.gather(*futures)  # 결과를 한꺼번에 가져옴
 
-        # for idx, img in enumerate(img_list):
-        #
-        #     cropped_list.append(get_cropped_img_array(img))
-        #     await manager.send({
-        #         "message": f"사진 자르는 중.. ({idx + 1}/{len(files)})",
-        #         "status": "crop"
-        #     }, client_id)
         for idx, file in enumerate(files):
             await manager.send({
                 "message": f"사진 자르는 중.. ({idx + 1}/{len(files)})",

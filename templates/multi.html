@@ -57,6 +57,7 @@
         let fileList = [];
         let maxFile = 100;
         let cnt = 0;
+        let isProcessing = false;
 
         function getCookie(cookieName) {
             var cookieValue = null;
@@ -121,7 +122,7 @@
 
                     j++;
                 }
-
+                isProcessing = false;
 
             }
 
@@ -214,6 +215,11 @@
 
             $('#uploadImageServer').click(function () {
 
+                if(isProcessing === true){
+                    alert("처리 중입니다!");
+                    return;
+                }
+
 
                 {#var fileList = ;#}
                 let fileCnt = fileList.length;
@@ -237,6 +243,9 @@
                     </div>
                 </div>
             `);
+
+                isProcessing = true;
+
                 var request = $.ajax({
                     url: "./upload-multi",
                     cache: false,
@@ -249,6 +258,7 @@
 
                     },
                     error: function (ajaxContext) {
+                        isProcessing = false;
                         alert(`${maxFile}개 미만의 이미지만 업로드해주세요!`)
                     }
                 })
