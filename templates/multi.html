@@ -132,7 +132,7 @@
 <main>
     <div class="container" align="center" id="content">
         <br/>
-        <h3 align="center">아이유, 아이린, 아린 사진을 올려주세요~~</h3>
+        <h3 align="center">아이유, 아이린, 아린 사진을 여러 장 올려주세요~~</h3>
         <br/>
         <div class="row">
             <div class="col-md-12"></div>
@@ -207,6 +207,24 @@
             $("#predictResult").html(`
                 <div class="btn btn-primary" id="downloadZip" data="${data.message}">압축파일 다운로드!</div>
             `);
+
+
+
+
+            let result_list = data.result;
+            let i = 0;
+            for(let result of result_list){
+                let idol_label = ["아이유","아이린", "아린"].indexOf(result.idol)
+
+                $(`.multiUploadedImage[data=${i}]`).addClass(
+                    `idolLabel${idol_label}`
+                );
+
+                i++;
+            }
+
+
+
         }
 
     }
@@ -275,20 +293,31 @@
         $('#upload_image').change(function (event) {
 
             var fileList = this.files;
+            let fileCnt = fileList.length;
+
+            if(fileCnt === 0){
+                $("#uploadImageServer").hide();
+                $("#downloadZip").hide();
+            }else{
+                $("#uploadImageServer").show();
+            }
+
+
             var anyWindow = window.URL || window.webkitURL;
             $('#uploadImageContainer').html('');
+            let i = 0;
             for (file of fileList) {
 
                 //get a blob to play with
                 var objectUrl = anyWindow.createObjectURL(file);
                 // for the next line to work, you need something class="preview-area" in your html
                 $('#uploadImageContainer').append(`
-                <img src="${objectUrl}"
+                <img src="${objectUrl}" data="${i}"
                     class="multiUploadedImage"
                 />`);
                 // get rid of the blob
                 window.URL.revokeObjectURL(file);
-
+                i++;
 
             }
             $("#predictResult").text("이미지를 업로드하고 결과를 확인해보세요~");
@@ -328,6 +357,8 @@
                 type: 'POST',
                 success: function (res, status) {
                     //$("#uploadImageServer").hide();
+                    $("#downloadZip").hide();
+
                 },
                 fail: function (res) {
                     alert('Failed');

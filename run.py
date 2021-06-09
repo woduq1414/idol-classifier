@@ -42,6 +42,10 @@ class ConnectionManager:
         self.connections[client_id] = websocket
         print(self.connections)
 
+
+    async def disconnect(self, client_id):
+        del self.connections[client_id]
+
     async def broadcast(self, data: str):
         for connection in self.connections.values():
             await connection.send_text(data)
@@ -66,8 +70,13 @@ manager = ConnectionManager()
 async def websocket_endpoint(websocket: WebSocket, client_id: int):
     await manager.connect(websocket, client_id)
     while True:
-        data = await websocket.receive_text()
+        try:
+            data = await websocket.receive_text()
+        except:
+            await manager.disconnect(client_id)
+            return
         await manager.broadcast(f"Client {client_id}: {data}")
+
 
 
 app.mount("/static", StaticFiles(directory="static"), name="static")
@@ -94,7 +103,6 @@ async def read_root():
 
 @app.get("/upload", response_class=HTMLResponse)
 async def upload_form(request: Request):
-    await manager.broadcast("DS")
     return templates.TemplateResponse("upload.html", {"request": request})
 
 
@@ -142,25 +150,29 @@ async def process_multi(files, client_id=None):
         print(file.filename)
         img = Image.open(BytesIO(bin)).convert('RGB')
         img_list.append(img)
-
+        cropped_list.append(get_cropped_img_array(img))
+        await manager.send({
+            "message": f"사진 자르는 중.. ({idx + 1}/{len(files)})",
+            "status": "crop"
+        }, client_id)
         # print("Crop", file.filename)
         return True
 
     async def main():
 
-        futures = [asyncio.ensure_future(process(file, idx)) for idx, file in enumerate(files)]
+        # futures = [asyncio.ensure_future(process(file, idx)) for idx, file in enumerate(files)]
         # 태스크(퓨처) 객체를 리스트로 만듦
-        crop_result = await asyncio.gather(*futures)  # 결과를 한꺼번에 가져옴
+        # crop_result = await asyncio.gather(*futures)  # 결과를 한꺼번에 가져옴
 
-        for idx, img in enumerate(img_list):
+        # for idx, img in enumerate(img_list):
+        #
+        #     cropped_list.append(get_cropped_img_array(img))
+        #     await manager.send({
+        #         "message": f"사진 자르는 중.. ({idx + 1}/{len(files)})",
+        #         "status": "crop"
+        #     }, client_id)
 
-            cropped_list.append(get_cropped_img_array(img))
-            await manager.send({
-                "message": f"사진 자르는 중.. ({idx + 1}/{len(files)})",
-                "status": "crop"
-            }, client_id)
-
-        # crop_result = [await process(file, idx) for idx, file in enumerate(files)]
+        crop_result = [await process(file, idx) for idx, file in enumerate(files)]
 
         print("Crop Finish")
 
@@ -235,6 +247,31 @@ async def process_multi(files, client_id=None):
     return result_list
 
 
+def delete_old_files():
+    from datetime import datetime
+    import shutil
+    path_target = f'./static/export'
+    print("delete start")
+    """path_target:삭제할 파일이 있는 디렉토리, days_elapsed:경과일수"""
+    print(os.listdir(path_target))
+    for f in os.listdir(path_target): # 디렉토리를 조회한다
+        f = os.path.join(path_target, f)
+        if True or os.path.isfile(f): # 파일이면
+            timestamp_now = datetime.now().timestamp() # 타임스탬프(단위:초)
+            # st_mtime(마지막으로 수정된 시간)기준 X일 경과 여부
+            is_old = os.stat(f).st_mtime < timestamp_now - (3 * 60 * 60)
+            if is_old: # X일 경과했다면
+                try:
+
+                    shutil.rmtree(f) # 파일을 지운다
+                    print(f, 'is deleted') # 삭제완료 로깅
+                except OSError: # Device or resource busy (다른 프로세스가 사용 중)등의 이유
+                    pass
+                    # print(f, 'can not delete') # 삭제불가 로깅
+            else:
+                pass
+
+
 @app.post("/upload-multi")
 async def upload_multi(background_tasks: BackgroundTasks, files: List[UploadFile] = File(...),
                        websocket_cookie: Optional[str] = Cookie(None), ):
@@ -245,6 +282,7 @@ async def upload_multi(background_tasks: BackgroundTasks, files: List[UploadFile
         if file.content_type[:5] != "image":
             raise HTTPException(status_code=400, detail="Please upload image.")
     background_tasks.add_task(process_multi, files, client_id=int(websocket_cookie))
+    background_tasks.add_task(delete_old_files)
     return {
         "message": "Pending"
     }

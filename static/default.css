@@ -185,6 +185,21 @@ main {
     background-size: cover;
 }
 
+.multiUploadedImage.idolLabel0 {
+    border: 5px solid orangered !important;
+}
+
+.multiUploadedImage.idolLabel1 {
+    border: 5px solid deepskyblue !important;
+}
+
+
+.multiUploadedImage.idolLabel2 {
+    border: 5px solid orchid !important;
+}
+
+
+
 #uploadImageContainer {
     display: flex;
     justify-content: center;
