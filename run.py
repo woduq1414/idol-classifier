@@ -253,7 +253,7 @@ def delete_old_files():
     path_target = f'./static/export'
     print("delete start")
     """path_target:삭제할 파일이 있는 디렉토리, days_elapsed:경과일수"""
-    print(os.listdir(path_target))
+    # print(os.listdir(path_target))
     for f in os.listdir(path_target): # 디렉토리를 조회한다
         f = os.path.join(path_target, f)
         if True or os.path.isfile(f): # 파일이면
@@ -289,7 +289,7 @@ async def upload_multi(background_tasks: BackgroundTasks, files: List[UploadFile
 
 
 @app.get("/multi", response_class=HTMLResponse)
-async def multi_form(request: Request):
+async def upload_multi_form(request: Request):
     return templates.TemplateResponse("multi.html", {"request": request})
 
 
