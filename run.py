@@ -134,10 +134,6 @@ async def report_result(request: Request):
 
 
 async def process_multi(files, client_id=None):
-    async def tt():
-        for i in range(15):
-            await asyncio.sleep(0.2)
-            await manager.send({"t": str(datetime.now())}, client_id)
 
 
     hash = id_generator(8)
@@ -166,7 +162,6 @@ async def process_multi(files, client_id=None):
         return True
 
     async def main():
-        await tt()
         # futures = [asyncio.ensure_future(process(file, idx)) for idx, file in enumerate(files)]
         # 태스크(퓨처) 객체를 리스트로 만듦
         # crop_result = await asyncio.gather(*futures)  # 결과를 한꺼번에 가져옴
@@ -194,14 +189,16 @@ async def process_multi(files, client_id=None):
 
         predict_list = []
         for i in range(math.ceil(len(cropped_list) / max_batch_size)):
-            crop_batch = cropped_list[max_batch_size * i: min(max_batch_size * (i + 1), len(cropped_list))]
-            t = net.predict(np.array(crop_batch) / 255, train_flg=False).tolist()
-            predict_list.extend(t)
-
             await manager.send({
                 "message": f"예측하는 중.. ({min(len(cropped_list), (i + 1) * max_batch_size)}/{len(cropped_list)})",
                 "status": "predict"
             }, client_id)
+            crop_batch = cropped_list[max_batch_size * i: min(max_batch_size * (i + 1), len(cropped_list))]
+            t = net.predict(np.array(crop_batch) / 255, train_flg=False).tolist()
+            predict_list.extend(t)
+
+
+            await asyncio.sleep(0.02)
 
 
 
@@ -291,6 +288,9 @@ async def upload_multi(background_tasks: BackgroundTasks, files: List[UploadFile
                        client_id: Optional[str] = Form(...), ):
     if client_id is None:
         raise HTTPException(status_code=401, detail="WebSocket Id Err.")
+
+    if len(files) > 100:
+        raise HTTPException(status_code=400, detail="Too many images.")
 
     for file in files:
         if file.content_type[:5] != "image":

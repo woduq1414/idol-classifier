@@ -29,7 +29,6 @@
                         </div>
 
 
-
                         <div class="btn btn-primary" id="uploadImageServer">업로드~~~~~~~</div>
 
                     </div>
@@ -56,6 +55,7 @@
     <script>
         var clientID = Date.now();
         let fileList = [];
+        let maxFile = 100;
 
 
         function getCookie(cookieName) {
@@ -149,9 +149,11 @@
                 // console.log("width: " + data.width);
                 // console.log("height: " + data.height);
                 // console.log(data.blob);
-                console.log(ev);
 
-                console.log(data);
+                if (i >= maxFile) {
+                    alert(`이미지는 ${maxFile}개까지 업로드 가능합니다!`)
+                    return;
+                }
 
                 let file = new File([data.blob], `temp_${Math.random().toString(36).substr(2, 11)}.${data.blob.type.split("/")[1]}`, {
                     type: data.blob.type,
@@ -167,8 +169,27 @@
 
             let i = 0;
             $('#upload_image').change(function (event) {
+                var anyWindow = window.URL || window.webkitURL;
                 for (let file of this.files) {
+
+                    if (i >= maxFile) {
+                        alert(`이미지는 ${maxFile}개까지 업로드 가능합니다!`)
+                        return;
+                    }
+
                     fileList.push(file);
+                    //get a blob to play with
+                    var objectUrl = anyWindow.createObjectURL(file);
+                    // for the next line to work, you need something class="preview-area" in your html
+                    $('#uploadImageContainer').append(`
+                     <img src="${objectUrl}" data="${i}"
+                        class="multiUploadedImage"
+                    />`);
+                    // get rid of the blob
+                    window.URL.revokeObjectURL(file);
+                    i++;
+
+
                 }
 
                 let fileCnt = fileList.length;
@@ -182,21 +203,10 @@
                 }
 
                 i = 0;
-                var anyWindow = window.URL || window.webkitURL;
 
 
                 for (file of fileList) {
 
-                    //get a blob to play with
-                    var objectUrl = anyWindow.createObjectURL(file);
-                    // for the next line to work, you need something class="preview-area" in your html
-                    $('#uploadImageContainer').append(`
-                <img src="${objectUrl}" data="${i}"
-                    class="multiUploadedImage"
-                />`);
-                    // get rid of the blob
-                    window.URL.revokeObjectURL(file);
-                    i++;
 
                 }
                 $("#predictResult").text("이미지를 업로드하고 결과를 확인해보세요~");
@@ -238,8 +248,8 @@
                     success: function (res, status) {
 
                     },
-                    fail: function (res) {
-                        alert('Failed');
+                    error: function (ajaxContext) {
+                        alert(`${maxFile}개 미만의 이미지만 업로드해주세요!`)
                     }
                 })
             });
