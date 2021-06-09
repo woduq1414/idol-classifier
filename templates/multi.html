@@ -105,10 +105,10 @@
                 $("#processProgress").html('');
                 $("#predictResult").html(`
                 <div class="btn btn-primary" id="downloadZip" data="${data.message}">압축파일 다운로드!</div>
-            `);
+                `);
 
 
-                $("#downloadZip").show();
+                {#$("#downloadZip").show();#}
 
                 let result_list = data.result;
                 let i = 0;
@@ -235,8 +235,6 @@
                     data: form_data,
                     type: 'POST',
                     success: function (res, status) {
-                        //$("#uploadImageServer").hide();
-                        $("#downloadZip").remove();
 
                     },
                     fail: function (res) {
