@@ -56,7 +56,7 @@
         var clientID = Date.now();
         let fileList = [];
         let maxFile = 100;
-
+        let cnt = 0;
 
         function getCookie(cookieName) {
             var cookieValue = null;
@@ -87,7 +87,7 @@
 
         $("#clearImage").on("click", function () {
             fileList = [];
-            i = 0;
+            cnt = 0;
             $('#uploadImageContainer').html('');
         })
 
@@ -111,15 +111,15 @@
                 {#$("#downloadZip").show();#}
 
                 let result_list = data.result;
-                let i = 0;
+                let j = 0;
                 for (let result of result_list) {
                     let idol_label = ["아이유", "아이린", "아린"].indexOf(result.idol)
 
-                    $(`.multiUploadedImage[data=${i}]`).addClass(
+                    $(`.multiUploadedImage[data=${j}]`).addClass(
                         `idolLabel${idol_label}`
                     );
 
-                    i++;
+                    j++;
                 }
 
 
@@ -150,7 +150,7 @@
                 // console.log("height: " + data.height);
                 // console.log(data.blob);
 
-                if (i >= maxFile) {
+                if (cnt >= maxFile) {
                     alert(`이미지는 ${maxFile}개까지 업로드 가능합니다!`)
                     return;
                 }
@@ -161,18 +161,18 @@
                 });
                 fileList.push(file);
                 $('#uploadImageContainer').append(`
-                <img src="${data.dataURL}" data="${i}"
+                <img src="${data.dataURL}" data="${cnt}"
                     class="multiUploadedImage"
                 />`);
-                i++;
+                cnt++;
             })
 
-            let i = 0;
+
             $('#upload_image').change(function (event) {
                 var anyWindow = window.URL || window.webkitURL;
                 for (let file of this.files) {
 
-                    if (i >= maxFile) {
+                    if (cnt >= maxFile) {
                         alert(`이미지는 ${maxFile}개까지 업로드 가능합니다!`)
                         return;
                     }
@@ -182,12 +182,12 @@
                     var objectUrl = anyWindow.createObjectURL(file);
                     // for the next line to work, you need something class="preview-area" in your html
                     $('#uploadImageContainer').append(`
-                     <img src="${objectUrl}" data="${i}"
+                     <img src="${objectUrl}" data="${cnt}"
                         class="multiUploadedImage"
                     />`);
                     // get rid of the blob
                     window.URL.revokeObjectURL(file);
-                    i++;
+                    cnt++;
 
 
                 }
@@ -202,7 +202,7 @@
                     $("#uploadImageServer").show();
                 }
 
-                i = 0;
+                cnt = 0;
 
 
                 for (file of fileList) {

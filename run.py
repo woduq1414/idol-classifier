@@ -193,6 +193,7 @@ async def process_multi(files, client_id=None):
                 "message": f"예측하는 중.. ({min(len(cropped_list), (i + 1) * max_batch_size)}/{len(cropped_list)})",
                 "status": "predict"
             }, client_id)
+            await asyncio.sleep(0.02)
             crop_batch = cropped_list[max_batch_size * i: min(max_batch_size * (i + 1), len(cropped_list))]
             t = net.predict(np.array(crop_batch) / 255, train_flg=False).tolist()
             predict_list.extend(t)
