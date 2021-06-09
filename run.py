@@ -173,9 +173,8 @@ async def process_multi(files, client_id=None):
         #         "message": f"사진 자르는 중.. ({idx + 1}/{len(files)})",
         #         "status": "crop"
         #     }, client_id)
-
-        crop_result = [await process(file, idx) for idx, file in enumerate(files)]
-
+        for idx, file in enumerate(files):
+            await process(file, idx)
         print("Crop Finish")
 
         max_batch_size = 10
