@@ -134,11 +134,11 @@ async def report_result(request: Request):
 
 
 async def process_multi(files, client_id=None):
-
-    for i in range(15):
-        await asyncio.sleep(0.2)
-        await manager.send({"t": str(datetime.now())}, client_id)
-
+    async def tt():
+        for i in range(15):
+            await asyncio.sleep(0.2)
+            await manager.send({"t": str(datetime.now())}, client_id)
+    await tt()
 
     hash = id_generator(8)
 
@@ -161,12 +161,7 @@ async def process_multi(files, client_id=None):
         img = Image.open(BytesIO(bin)).convert('RGB')
         img_list.append(img)
         cropped_list.append(get_cropped_img_array(img))
-        print("SEND")
-        await manager.send({
-            "message": f"사진 자르는 중.. ({idx + 1}/{len(files)})",
-            "status": "crop",
-            "time" : str(datetime.now())
-        }, client_id)
+
         # print("Crop", file.filename)
         return True
 
@@ -184,7 +179,13 @@ async def process_multi(files, client_id=None):
         #         "status": "crop"
         #     }, client_id)
         for idx, file in enumerate(files):
+            await manager.send({
+                "message": f"사진 자르는 중.. ({idx + 1}/{len(files)})",
+                "status": "crop",
+                "time": str(datetime.now())
+            }, client_id)
             await process(file, idx)
+
         print("Crop Finish")
 
         max_batch_size = 10
