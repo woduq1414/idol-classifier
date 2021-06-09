@@ -55,6 +55,7 @@ class ConnectionManager:
         return connection
 
     async def send(self, data, client_id):
+        print(data, client_id)
         conn = await self.get_connection_by_id(client_id)
         await conn.send_text(json.dumps(data))
 
@@ -151,6 +152,7 @@ async def process_multi(files, client_id=None):
         img = Image.open(BytesIO(bin)).convert('RGB')
         img_list.append(img)
         cropped_list.append(get_cropped_img_array(img))
+        print("SEND")
         await manager.send({
             "message": f"사진 자르는 중.. ({idx + 1}/{len(files)})",
             "status": "crop"
