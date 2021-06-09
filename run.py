@@ -138,7 +138,7 @@ async def process_multi(files, client_id=None):
         for i in range(15):
             await asyncio.sleep(0.2)
             await manager.send({"t": str(datetime.now())}, client_id)
-    await tt()
+
 
     hash = id_generator(8)
 
@@ -166,7 +166,7 @@ async def process_multi(files, client_id=None):
         return True
 
     async def main():
-
+        await tt()
         # futures = [asyncio.ensure_future(process(file, idx)) for idx, file in enumerate(files)]
         # 태스크(퓨처) 객체를 리스트로 만듦
         # crop_result = await asyncio.gather(*futures)  # 결과를 한꺼번에 가져옴
