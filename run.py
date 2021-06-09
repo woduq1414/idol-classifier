@@ -30,8 +30,9 @@ import string
 import random
 from time import time
 
-
 app = FastAPI()
+
+
 class ConnectionManager:
     def __init__(self):
         self.connections = {}
@@ -57,7 +58,6 @@ class ConnectionManager:
 multi_queue = {
 
 }
-
 
 manager = ConnectionManager()
 
@@ -86,8 +86,6 @@ def id_generator(size=6, chars=string.ascii_uppercase + string.digits + string.a
     return ''.join(random.choice(chars) for _ in range(size))
 
 
-
-
 @app.get("/")
 async def read_root():
     # time.sleep(3)
@@ -96,7 +94,6 @@ async def read_root():
 
 @app.get("/upload", response_class=HTMLResponse)
 async def upload_form(request: Request):
-
     await manager.broadcast("DS")
     return templates.TemplateResponse("upload.html", {"request": request})
 
@@ -124,7 +121,7 @@ async def report_result(request: Request):
     }
 
 
-async def process_multi(files, client_id = None):
+async def process_multi(files, client_id=None):
     hash = id_generator(8)
 
     print(files)
@@ -146,14 +143,6 @@ async def process_multi(files, client_id = None):
         img = Image.open(BytesIO(bin)).convert('RGB')
         img_list.append(img)
 
-        cropped_list.append(get_cropped_img_array(img))
-
-        print(manager.connections)
-        await manager.send({
-            "message" : f"사진 자르는 중.. ({idx + 1}/{len(files)})",
-            "status" : "crop"
-        }, client_id)
-
         # print("Crop", file.filename)
         return True
 
@@ -162,15 +151,33 @@ async def process_multi(files, client_id = None):
         futures = [asyncio.ensure_future(process(file, idx)) for idx, file in enumerate(files)]
         # 태스크(퓨처) 객체를 리스트로 만듦
         crop_result = await asyncio.gather(*futures)  # 결과를 한꺼번에 가져옴
+
+        for idx, img in enumerate(img_list):
+
+            cropped_list.append(get_cropped_img_array(img))
+            await manager.send({
+                "message": f"사진 자르는 중.. ({idx + 1}/{len(files)})",
+                "status": "crop"
+            }, client_id)
+
+        # crop_result = [await process(file, idx) for idx, file in enumerate(files)]
+
         print("Crop Finish")
 
-        max_batch_size = 20
+        max_batch_size = 10
 
         predict_list = []
         for i in range(math.ceil(len(cropped_list) / max_batch_size)):
             crop_batch = cropped_list[max_batch_size * i: min(max_batch_size * (i + 1), len(cropped_list))]
             t = net.predict(np.array(crop_batch) / 255, train_flg=False).tolist()
             predict_list.extend(t)
+
+            await manager.send({
+                "message": f"예측하는 중.. ({min(len(cropped_list), (i + 1) * max_batch_size)}/{len(cropped_list)})",
+                "status": "predict"
+            }, client_id)
+
+
 
         predict_list = np.array(predict_list)
         print(predict_list.shape)
@@ -195,9 +202,10 @@ async def process_multi(files, client_id = None):
                 "confidence": predict_confidence
             })
 
-        for img, file, result in zip(img_list, files, result_list):
+        for idx, (img, file, result) in enumerate(zip(img_list, files, result_list)):
             print("Image saved", f"{folder_path}/output/{result['idol']}/{file.filename}")
             img.save(f"{folder_path}/output/{result['idol']}/{file.filename}")
+
 
         import zipfile
         f = zipfile.ZipFile(f'{folder_path}/output.zip', 'w', zipfile.ZIP_DEFLATED)
@@ -213,10 +221,9 @@ async def process_multi(files, client_id = None):
 
         await manager.send({
             "message": f'{folder_path}/output.zip',
-            "result" : result_list,
+            "result": result_list,
             "status": "finish"
         }, client_id)
-
 
         return result_list
 
@@ -229,15 +236,15 @@ async def process_multi(files, client_id = None):
 
 
 @app.post("/upload-multi")
-async def upload_multi(background_tasks: BackgroundTasks, files: List[UploadFile] = File(...), websocket_cookie: Optional[str] = Cookie(None),  ):
-
+async def upload_multi(background_tasks: BackgroundTasks, files: List[UploadFile] = File(...),
+                       websocket_cookie: Optional[str] = Cookie(None), ):
     if websocket_cookie is None:
         raise HTTPException(status_code=401, detail="WebSocket Id Err.")
 
     for file in files:
         if file.content_type[:5] != "image":
             raise HTTPException(status_code=400, detail="Please upload image.")
-    background_tasks.add_task(process_multi, files, client_id = int(websocket_cookie))
+    background_tasks.add_task(process_multi, files, client_id=int(websocket_cookie))
     return {
         "message": "Pending"
     }

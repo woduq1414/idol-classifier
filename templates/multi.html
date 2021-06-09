@@ -199,7 +199,9 @@
         if (data.status === "crop") {
             $("#processProgress").html(data.message);
         } else if (data.status === "predict") {
-
+            $("#processProgress").html(data.message);
+        } else if (data.status === "predict") {
+            $("#processProgress").html(data.message);
         } else if (data.status === "finish") {
             $("#processProgress").html('');
             $("#predictResult").html(`
