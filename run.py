@@ -186,7 +186,7 @@ async def process_multi(files, client_id=None):
             }, client_id)
 
             await process(file, idx)
-            await asyncio.sleep(0.1)
+            await asyncio.sleep(0.02)
 
         print("Crop Finish")
 
