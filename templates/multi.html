@@ -214,6 +214,7 @@
                 for (let i = 0; i < fileCnt; i++) {
                     form_data.append("files", fileList[i]);
                 }
+                form_data.append("client_id", clientID);
 
                 $("#predictResult").html(`
                <div class="loadingio-spinner-ellipsis-09rzou9ppwnq">

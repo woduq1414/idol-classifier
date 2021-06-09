@@ -2,7 +2,7 @@ import math
 from typing import Optional
 import face_recognition as frc
 import uvicorn
-from fastapi import FastAPI, BackgroundTasks, Request, HTTPException, Cookie
+from fastapi import FastAPI, BackgroundTasks, Request, HTTPException, Cookie, Form
 import time
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
@@ -137,7 +137,7 @@ async def process_multi(files, client_id=None):
 
     for i in range(15):
         await asyncio.sleep(0.2)
-        await manager.send({"t", str(datetime.now())}, client_id)
+        await manager.send({"t": str(datetime.now())}, client_id)
 
 
     hash = id_generator(8)
@@ -285,14 +285,14 @@ def delete_old_files():
 
 @app.post("/upload-multi")
 async def upload_multi(background_tasks: BackgroundTasks, files: List[UploadFile] = File(...),
-                       websocket_cookie: Optional[str] = Cookie(None), ):
-    if websocket_cookie is None:
+                       client_id: Optional[str] = Form(...), ):
+    if client_id is None:
         raise HTTPException(status_code=401, detail="WebSocket Id Err.")
 
     for file in files:
         if file.content_type[:5] != "image":
             raise HTTPException(status_code=400, detail="Please upload image.")
-    background_tasks.add_task(process_multi, files, client_id=int(websocket_cookie))
+    background_tasks.add_task(process_multi, files, client_id=int(client_id))
     background_tasks.add_task(delete_old_files)
     return {
         "message": "Pending"
