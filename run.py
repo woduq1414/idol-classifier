@@ -184,7 +184,9 @@ async def process_multi(files, client_id=None):
                 "status": "crop",
                 "time": str(datetime.now())
             }, client_id)
+
             await process(file, idx)
+            await asyncio.sleep(1)
 
         print("Crop Finish")
 
