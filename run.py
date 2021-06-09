@@ -28,6 +28,9 @@ from tmp1 import process_img
 import asyncio
 import string
 import random
+from datetime import datetime
+
+
 from time import time
 
 app = FastAPI()
@@ -155,7 +158,8 @@ async def process_multi(files, client_id=None):
         print("SEND")
         await manager.send({
             "message": f"사진 자르는 중.. ({idx + 1}/{len(files)})",
-            "status": "crop"
+            "status": "crop",
+            "time" : str(datetime.now())
         }, client_id)
         # print("Crop", file.filename)
         return True
