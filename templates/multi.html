@@ -83,7 +83,7 @@
         }
 
 
-        var ws = new WebSocket(`${window.location.host === "127.0.0.1:7777" ? "ws" : "wss"}://${window.location.host}/ws/${clientID}`);
+        var ws = new WebSocket(`${window.location.protocol === "http:" ? "ws" : "wss"}://${window.location.host}/ws/${clientID}`);
 
 
         $("#clearImage").on("click", function () {
