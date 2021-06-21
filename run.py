@@ -30,6 +30,7 @@ import string
 import random
 from datetime import datetime
 
+import socket
 
 from time import time
 
@@ -93,6 +94,10 @@ net.load_model("./model/idol_train_weight_2021-06-06 090301_8907_np.npz")
 
 idol_list = ["아이유", "아이린", "아린"]
 eng_idol_list = ["iu", "irene", "arin"]
+
+is_local = False
+if socket.gethostname()[:4] == "DESK":
+    is_local = True
 
 
 def id_generator(size=6, chars=string.ascii_uppercase + string.digits + string.ascii_lowercase):
@@ -320,7 +325,7 @@ async def upload_image(request: Request):
 
 def get_cropped_img_array(img):
     img_array = np.asarray(img)
-    faces = frc.face_locations(img_array)
+    faces = frc.face_locations(img_array, model="hog")
     faces = sorted(faces, key=lambda x: (x[2] - x[0]) * (x[3] - x[1]), reverse=True)
     # print(len(faces))
     if len(faces) >= 1:
