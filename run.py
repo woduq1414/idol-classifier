@@ -104,13 +104,13 @@ def id_generator(size=6, chars=string.ascii_uppercase + string.digits + string.a
     return ''.join(random.choice(chars) for _ in range(size))
 
 
-@app.get("/")
-async def read_root():
+@app.get("/ping")
+async def ping():
     # time.sleep(3)
     return {"Hello": "World"}
 
 
-@app.get("/upload", response_class=HTMLResponse)
+@app.get("/", response_class=HTMLResponse)
 async def upload_form(request: Request):
     return templates.TemplateResponse("upload.html", {"request": request})
 

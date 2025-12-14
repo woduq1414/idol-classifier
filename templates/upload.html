@@ -1,169 +1,379 @@
-{% extends 'nav.html' %}
+<html>
 
-{% block content %}
-    <main>
-        <div class="container" align="center" id="content">
-            <br/>
-            <h3 align="center">아이유, 아이린, 아린 사진을 올려주세요~~</h3>
+<head>
+    <title>아이돌 분류기</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6" crossorigin="anonymous">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.0/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-JEW9xMcG8R+pH31jmWH6WWP0WintQrMb4s7ZOdauHnUtxwoG2vI5DkLtS3qm9Ekf"
+            crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://unpkg.com/dropzone/dist/dropzone.css"/>
+    <link href="https://unpkg.com/cropperjs/dist/cropper.css" rel="stylesheet"/>
+    <script src="https://unpkg.com/dropzone"></script>
+    <script src="https://unpkg.com/cropperjs"></script>
+    <link href="/static/default.css" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Nanum+Gothic&display=swap" rel="stylesheet">
+    <script src="//cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/paste.js/0.0.18/paste.min.js"
+            integrity="sha512-Rrl4RMar4C0aKtkB91vFvdkbKRJU4rbuWSxMHaQ/OUMpciWQ67EdL/jltGhhRmx7bZRKO/OhfXUgO2m5rejpxg=="
+            crossorigin="anonymous"></script>
+    <script src="https://cdn.socket.io/3.1.3/socket.io.js"></script>
 
-            <br/>
-            <div class="row">
-                <div class="col-md-4"></div>
-                <div class="col-md-4">
-                    <div class="image_area">
-                        <label for="upload_image">
+    <style type="text/css">
+        @keyframes ldio-amk4o234dga {
+            0% {
+                transform: translate(12px, 80px) scale(0);
+            }
+            25% {
+                transform: translate(12px, 80px) scale(0);
+            }
+            50% {
+                transform: translate(12px, 80px) scale(1);
+            }
+            75% {
+                transform: translate(80px, 80px) scale(1);
+            }
+            100% {
+                transform: translate(148px, 80px) scale(1);
+            }
+        }
 
-                            <img src="" id="uploaded_image" class="img-responsive"/>
-                            <br>
-                            <div class="btn btn-outline-secondary">이미지 가져오기~~~</div>
+        @keyframes ldio-amk4o234dga-r {
+            0% {
+                transform: translate(148px, 80px) scale(1):
+            }
+            100% {
+                transform: translate(148px, 80px) scale(0);
+            }
+        }
 
-                            <input type="file" accept="image/*" name="image" class="image" id="upload_image"
-                                   style="display:none"/>
-                        </label>
-                        <!--                    <br>-->
-                        <br>
-                        <div class="btn btn-primary" id="uploadImageServer">업로드~~~~~~~</div>
+        @keyframes ldio-amk4o234dga-c {
+            0% {
+                background: #c13be8
+            }
+            25% {
+                background: #d2a9e6
+            }
+            50% {
+                background: #b267ce
+            }
+            75% {
+                background: #951ad0
+            }
+            100% {
+                background: #c13be8
+            }
+        }
 
-                    </div>
+        .ldio-amk4o234dga div {
+            position: absolute;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            transform: translate(80px, 80px) scale(1);
+            background: #c13be8;
+            animation: ldio-amk4o234dga 1.7543859649122806s infinite cubic-bezier(0, 0.5, 0.5, 1);
+        }
 
+        .ldio-amk4o234dga div:nth-child(1) {
+            background: #951ad0;
+            transform: translate(148px, 80px) scale(1);
+            animation: ldio-amk4o234dga-r 0.43859649122807015s infinite cubic-bezier(0, 0.5, 0.5, 1), ldio-amk4o234dga-c 1.7543859649122806s infinite step-start;
+        }
 
-                </div>
+        .ldio-amk4o234dga div:nth-child(2) {
+            animation-delay: -0.43859649122807015s;
+            background: #c13be8;
+        }
 
+        .ldio-amk4o234dga div:nth-child(3) {
+            animation-delay: -0.8771929824561403s;
+            background: #951ad0;
+        }
 
-            </div>
-            <hr>
-            <div id="predictResult">
-                이미지를 업로드하고 결과를 확인해보세요~
-            </div>
+        .ldio-amk4o234dga div:nth-child(4) {
+            animation-delay: -1.3157894736842104s;
+            background: #b267ce;
+        }
+
+        .ldio-amk4o234dga div:nth-child(5) {
+            animation-delay: -1.7543859649122806s;
+            background: #d2a9e6;
+        }
+
+        .loadingio-spinner-ellipsis-09rzou9ppwnq {
+            width: 200px;
+            height: 200px;
+            display: inline-block;
+            overflow: hidden;
+            background: none;
+        }
+
+        .ldio-amk4o234dga {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            transform: translateZ(0) scale(1);
+            backface-visibility: hidden;
+            transform-origin: 0 0; /* see note above */
+        }
+
+        .ldio-amk4o234dga div {
+            box-sizing: content-box;
+        }
+
+        /* generated by https://loading.io/ */
+    </style>
+</head>
+
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <div class="container-fluid">
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarTogglerDemo01"
+                aria-controls="navbarTogglerDemo01" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarTogglerDemo01">
+            <a class="navbar-brand" href="#">아이돌 분류기</a>
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <li class="nav-item">
+                    <a class="nav-link" aria-current="page" href="/upload">하나씩</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/multi">여러개</a>
+                </li>
+
+            </ul>
+
         </div>
-    </main>
+    </div>
+</nav>
+<body>
 
 
-    <div class="modal fade" id="modal" tabindex="-1" role="dialog" aria-labelledby="modalLabel"
-         aria-hidden="true">
-        <div class="modal-dialog modal-lg" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">이미지 자르기(한 사람 얼굴만 포함되게~~)</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+<main>
+    <div class="container" align="center" id="content">
+        <br />
+        <h3 align="center">아이유, 아이린, 아린 사진을 올려주세요~~</h3>
 
-                    </button>
+        <br />
+        <div class="row">
+            <div class="col-md-4"></div>
+            <div class="col-md-4">
+                <div class="image_area">
+                    <label for="upload_image">
+
+                        <img src="" id="uploaded_image" class="img-responsive" />
+                        <br>
+                        <div class="btn btn-outline-secondary">이미지 가져오기~~~</div>
+
+                        <input type="file" accept="image/*" name="image" class="image" id="upload_image"
+                            style="display:none" />
+                    </label>
+                    <!--                    <br>-->
+                    <br>
+                    <div class="btn btn-primary" id="uploadImageServer">업로드~~~~~~~</div>
+
                 </div>
-                <div class="modal-body">
-                    <div class="img-container">
-                        <div class="row">
-                            <div class="col-md-8">
-                                <img src="" id="sample_image"/>
-                            </div>
-                            <div class="col-md-4 " id="previewWrapper">
-                                <div class="preview"></div>
-                            </div>
+
+
+            </div>
+
+
+        </div>
+        <hr>
+        <div id="predictResult">
+            이미지를 업로드하고 결과를 확인해보세요~
+        </div>
+    </div>
+</main>
+
+
+<div class="modal fade" id="modal" tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">이미지 자르기(한 사람 얼굴만 포함되게~~)</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="img-container">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <img src="" id="sample_image" style="max-width: 100%; display: block;" />
                         </div>
                     </div>
                 </div>
-                <div class="modal-footer">
-                    <button type="button" id="crop" class="btn btn-primary">확인</button>
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">취소</button>
-                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" id="crop" class="btn btn-primary">확인</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">취소</button>
             </div>
         </div>
     </div>
+</div>
 
-    </body>
-    </html>
+</body>
 
-    <script>
-        let prevImageData = undefined;
+</html>
 
-
-        $(document).ready(function () {
-
-
-            var $modal = $('#modal');
-
-            var image = document.getElementById('sample_image');
-
-            var cropper;
-
-            $('body').pastableNonInputable();
-            $('body').on('pasteImage', function (ev, data) {
-                // console.log("dataURL: " + data.dataURL);
-                // console.log("width: " + data.width);
-                // console.log("height: " + data.height);
-                // console.log(data.blob);
-                image.src = data.dataURL;
-
-                $modal.modal('show');
-            })
+<script>
+    let prevImageData = undefined;
 
 
-            $("#upload_image").click(function () {
-                $("#upload_image").val("")
-            });
+    $(document).ready(function () {
 
-            $('#upload_image').change(function (event) {
-                var files = event.target.files;
 
-                var done = function (url) {
-                    image.src = url;
-                    $modal.modal('show');
-                };
+        var $modal = $('#modal');
+        var image = document.getElementById('sample_image');
+        var cropper = null;
 
-                if (files && files.length > 0) {
-                    reader = new FileReader();
-                    reader.onload = function (event) {
-                        done(reader.result);
-                    };
-                    reader.readAsDataURL(files[0]);
-                }
-            });
-
-            $modal.on('shown.bs.modal', function () {
-                cropper = new Cropper(image, {
-                    // aspectRatio: 1,
-                    viewMode: 1,
-                    initialAspectRatio: 1,
-                    preview: '.preview',
-                    dragMode: "move"
-                });
-
-            }).on('hidden.bs.modal', function () {
+        function initCropper(imageUrl) {
+            // 기존 cropper 인스턴스가 있으면 제거
+            if (cropper) {
                 cropper.destroy();
                 cropper = null;
+            }
+            
+            // 이미지 소스 설정
+            image.src = imageUrl;
+            
+            // 이미지가 로드된 후 cropper 초기화하는 함수
+            function setupCropper() {
+                // Cropper 초기화 - 이미지 전체가 보이도록 설정
+                cropper = new Cropper(image, {
+                    aspectRatio: 1, // 정사각형 비율
+                    viewMode: 0, // 자유로운 크기 조절 가능
+                    dragMode: 'move', // 드래그 모드: move (이미지 이동)
+                    autoCropArea: 0.8, // 초기 crop 영역을 80%로 설정
+                    restore: false,
+                    guides: true,
+                    center: true,
+                    highlight: false,
+                    cropBoxMovable: true, // crop box 이동 가능
+                    cropBoxResizable: true, // crop box 크기 조절 가능 (드래그로)
+                    toggleDragModeOnDblclick: false,
+                    zoomable: true, // 줌 가능
+                    zoomOnTouch: true,
+                    zoomOnWheel: true,
+                    wheelZoomRatio: 0.1,
+                    minCropBoxWidth: 50,
+                    minCropBoxHeight: 50,
+                    ready: function() {
+                        // 이미지가 전체적으로 보이도록 줌 조정
+                        var containerData = cropper.getContainerData();
+                        var imageData = cropper.getImageData();
+                        
+                        // 컨테이너에 맞게 이미지 크기 조정
+                        var containerWidth = containerData.width;
+                        var containerHeight = containerData.height;
+                        var imageWidth = imageData.naturalWidth;
+                        var imageHeight = imageData.naturalHeight;
+                        
+                        var scaleX = containerWidth / imageWidth;
+                        var scaleY = containerHeight / imageHeight;
+                        var scale = Math.min(scaleX, scaleY) * 0.9; // 약간 여유를 두고
+                        
+                        cropper.zoomTo(scale);
+                    }
+                });
+            }
+            
+            // 이미지가 이미 로드되어 있는 경우
+            if (image.complete) {
+                setupCropper();
+            } else {
+                // 이미지 로드 대기
+                image.onload = setupCropper;
+                image.onerror = function() {
+                    console.error('이미지 로드 실패');
+                };
+            }
+        }
+
+        $('body').pastableNonInputable();
+        $('body').on('pasteImage', function (ev, data) {
+            image.src = data.dataURL;
+            var modal = new bootstrap.Modal($modal[0]);
+            modal.show();
+        })
+
+
+        $("#upload_image").click(function () {
+            $("#upload_image").val("")
+        });
+
+        $('#upload_image').change(function (event) {
+            var files = event.target.files;
+
+            if (files && files.length > 0) {
+                reader = new FileReader();
+                reader.onload = function (event) {
+                    image.src = reader.result;
+                    var modal = new bootstrap.Modal($modal[0]);
+                    modal.show();
+                };
+                reader.readAsDataURL(files[0]);
+            }
+        });
+
+        // 모달이 완전히 표시된 후 cropper 초기화
+        $modal.on('shown.bs.modal', function () {
+            if (image.src) {
+                initCropper(image.src);
+            }
+        });
+
+        $modal.on('hidden.bs.modal', function () {
+            if (cropper) {
+                cropper.destroy();
+                cropper = null;
+            }
+            image.src = '';
+        });
+
+        $('#crop').click(function () {
+            if (!cropper) {
+                return;
+            }
+
+            // 크롭된 캔버스 가져오기
+            var canvas = cropper.getCroppedCanvas({
+                width: 400,
+                height: 400,
+                imageSmoothingEnabled: true,
+                imageSmoothingQuality: 'high'
             });
 
-            $('#crop').click(function () {
-                canvas = cropper.getCroppedCanvas({
-                    width: 400,
-                    height: 400
-                });
-
-                canvas.toBlob(function (blob) {
-                    url = URL.createObjectURL(blob);
-                    var reader = new FileReader();
-                    reader.readAsDataURL(blob);
-                    reader.onloadend = function () {
-                        var base64data = reader.result;
-                        $("#uploaded_image").attr("src", base64data);
-                        $("#uploaded_image").show();
-                        $("#predictResult").text("이미지를 업로드하고 결과를 확인해보세요~");
-                        $modal.modal('hide');
-                    };
-                });
+            // Blob으로 변환
+            canvas.toBlob(function (blob) {
+                var reader = new FileReader();
+                reader.readAsDataURL(blob);
+                reader.onloadend = function () {
+                    var base64data = reader.result;
+                    $("#uploaded_image").attr("src", base64data);
+                    $("#uploaded_image").show();
+                    $("#predictResult").text("이미지를 업로드하고 결과를 확인해보세요~");
+                    var modal = bootstrap.Modal.getInstance($modal[0]);
+                    modal.hide();
+                };
+            }, 'image/png', 1.0);
+        });
 
 
-            });
+        $('#uploadImageServer').click(function () {
+            let base64data = $("#uploaded_image").attr("src");
 
+            if (prevImageData === base64data) {
+                return;
+            }
+            prevImageData = base64data;
 
-            $('#uploadImageServer').click(function () {
-                let base64data = $("#uploaded_image").attr("src");
-
-                if (prevImageData === base64data) {
-                    return;
-                }
-                prevImageData = base64data;
-
-                $("#predictResult").html(`
+            $("#predictResult").html(`
                <div class="loadingio-spinner-ellipsis-09rzou9ppwnq">
                     <div class="ldio-amk4o234dga">
                         <div></div>
@@ -174,29 +384,29 @@
                     </div>
                 </div>
             `);
-                $.ajax({
-                    url: './upload-image',
-                    method: 'POST',
-                    dataType: "json",
-                    data: JSON.stringify({image: base64data}),
-                    success: function (data) {
-                        let eng_idol_name;
-                        switch (data["result"]["idol"]) {
-                            case "아이유":
-                                eng_idol_name = "iu";
-                                break;
-                            case "아이린":
-                                eng_idol_name = "irene";
-                                break;
-                            case "아린":
-                                eng_idol_name = "arin";
-                                break;
-                        }
+            $.ajax({
+                url: './upload-image',
+                method: 'POST',
+                dataType: "json",
+                data: JSON.stringify({ image: base64data }),
+                success: function (data) {
+                    let eng_idol_name;
+                    switch (data["result"]["idol"]) {
+                        case "아이유":
+                            eng_idol_name = "iu";
+                            break;
+                        case "아이린":
+                            eng_idol_name = "irene";
+                            break;
+                        case "아린":
+                            eng_idol_name = "arin";
+                            break;
+                    }
 
 
-                        if ("result" in data) {
-                            let result = data["result"]
-                            $("#predictResult").html(`
+                    if ("result" in data) {
+                        let result = data["result"]
+                        $("#predictResult").html(`
                         <span id="resultTitle">${result["idol"]}~~</span>
                         <br>
 
@@ -204,10 +414,9 @@
 
 
                         <div id="resultIdolContainer">
-                        ${
-                                Object.keys(result["percentage"]).map(function (idol_name) {
-                                    let percentage = result.percentage[idol_name].toFixed(2);
-                                    return `
+                        ${Object.keys(result["percentage"]).map(function (idol_name) {
+                            let percentage = result.percentage[idol_name].toFixed(2);
+                            return `
 
                                     <div class="resultEachIdolWrapper">
                                         <div class="resultLeftText">
@@ -222,7 +431,7 @@
 
 
                                `
-                                }).join("")
+                        }).join("")
                             }
                         </div>
 
@@ -240,54 +449,57 @@
                         </span>
 
                         `)
-                        } else {
-                            $("#predictResult").html(`얼굴 하나만 잘라주세요ㅠ`)
-                        }
-
-
+                    } else {
+                        $("#predictResult").html(`얼굴 하나만 잘라주세요ㅠ`)
                     }
-                });
+
+
+                }
             });
-
-
         });
 
-        $(document).on("click", "#resultReportButton", async function (e) {
 
-            let predicted = $(e.target).attr("eng_idol_name")
+    });
 
-            const {value: real_idol} = await Swal.fire({
-                title: '업로드한 사진은 누구였나요?',
-                text: "사진이 서버에 저장되며 모델 개선을 위해 사용됩니다.",
-                input: 'radio',
-                inputOptions: {
-                    'iu': '아이유',
-                    'irene': '아이린',
-                    'arin': '아린'
-                },
-                inputValidator: (value) => {
-                    if (!value) {
-                        return '하나를 골라주세요!'
-                    }
+    $(document).on("click", "#resultReportButton", async function (e) {
+
+        let predicted = $(e.target).attr("eng_idol_name")
+
+        const { value: real_idol } = await Swal.fire({
+            title: '업로드한 사진은 누구였나요?',
+            text: "사진이 서버에 저장되며 모델 개선을 위해 사용됩니다.",
+            input: 'radio',
+            inputOptions: {
+                'iu': '아이유',
+                'irene': '아이린',
+                'arin': '아린'
+            },
+            inputValidator: (value) => {
+                if (!value) {
+                    return '하나를 골라주세요!'
                 }
-            })
-
-            $.ajax({
-                url: './report-result',
-                method: 'POST',
-                dataType: "json",
-                data: JSON.stringify({image: prevImageData, predicted: predicted, real: real_idol}),
-                success: function (data) {
-                    Swal.fire(
-                        '감사합니다!',
-                        '',
-                        'success'
-                    )
-                }
-            })
-
-
+            }
         })
 
-    </script>
-{% endblock %}
+        $.ajax({
+            url: './report-result',
+            method: 'POST',
+            dataType: "json",
+            data: JSON.stringify({ image: prevImageData, predicted: predicted, real: real_idol }),
+            success: function (data) {
+                Swal.fire(
+                    '감사합니다!',
+                    '',
+                    'success'
+                )
+            }
+        })
+
+
+    })
+
+</script>
+
+
+
+</html>
