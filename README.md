@@ -1,6 +1,6 @@
 # idol-classifier
  
-직접 만든 딥러닝 프레임워크를 통해 만든 아이유, 아이린, 아린 분류기 사이트입니다.
+상용 프레임워크 없이 만든 아이유, 아이린, 아린 분류기 사이트입니다.
 
 ![image](https://user-images.githubusercontent.com/49589140/148674703-084823b0-c17b-4fcf-88a9-8492f8b01c8b.png)
 
